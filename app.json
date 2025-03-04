@@ -48,8 +48,9 @@
     "updates": {
       "url": "https://u.expo.dev/55a17f0c-165a-4320-9ec7-0caf5be77c00"
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    }
+    "runtimeVersion": "1.0.0"
+    // {
+    //   "policy": "appVersion"
+    // }
   }
 }
