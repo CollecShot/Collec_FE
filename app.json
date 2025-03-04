@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HelloWorld",
-    "slug": "expo-template-default",
+    "name": "Collec_FE",
+    "slug": "collec-fe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,13 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.collec.collecfe"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.collec.collecfe"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +38,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "55a17f0c-165a-4320-9ec7-0caf5be77c00"
+      }
+    },
+    "owner": "collec",
+    "updates": {
+      "url": "https://u.expo.dev/55a17f0c-165a-4320-9ec7-0caf5be77c00"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
