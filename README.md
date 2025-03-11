@@ -1,50 +1,39 @@
-# Welcome to your Expo app 👋
+## Commit Convention
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+타입: 부연 설명 및 이유 #이슈번호
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```jsx
+//ex. feat: Login 화면 UI 구현 #1
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- ✨ `feat`: 새로운 기능 추가
+- 🔨 `fix`: 기능 수정 - 사용자가 동작했을 때 달라지는 것
+- ♻️ `refactor`: 코드 리펙토링 - 사용자가 동작했을 때 달라지지 않고 코드 변경 (기능 개선, 버전업)
+- 🐛 `bug`: 버그 수정
+- 🚑️ `hotfix`: 핫픽스
+- 💄 `UI`: CSS 수정, UI수정
+- 🎨 `style`: 코드 포맷팅, 세미 콜론 누락, 코드 변경이 없는 경우
+- 🔧 `config`: 설정, 환경 변수 변경
+- ✏️ `typo`: 오타 수정 , 워딩 수정
+- 📝 `docs`: 문서 수정
+- 💬 `comment`: Todo, Highlight, Question 등 기타 주석 추가/삭제
+- 📦 `package`: 새로운 라이브러리 추가
+- 🔥`remove`: 코드나 파일 삭제
 
-## Learn more
+## Branch
 
-To learn more about developing your project with Expo, look at the following resources:
+(feat/fix/refactor/chore)/#이슈번호-(UI/API)-기능설명
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+ex) feat/#2-UI-home
 
-## Join the community
+ex) feat/#16-API-create-post
 
-Join our community of developers creating universal apps.
+## Git Flow
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Issue 생성
+2. Branch 생성
+3. add → commit → push → pull request 과정을 거친다.
+4. 코드 리뷰 진행 후 모든 팀원들의 승인을 받는다.
+5. develop branch로 merge한다.
+
+**develop branch으로 이동하여 pull을 받은 다음 위 과정을 반복한다.**
