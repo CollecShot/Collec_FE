@@ -1,7 +1,9 @@
+import theme from "@/src/themes";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { ThemeProvider } from "styled-components";
 
 SplashScreen.preventAutoHideAsync(); // 스플래시 화면이 자동으로 사라지지 않도록 설정
 
@@ -24,5 +26,13 @@ export default function RootLayout() {
   if (!fontsLoaded && !error) {
     return null; //TODO 여기 스플래쉬 화면 추가
   }
-  return <Stack />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </ThemeProvider>
+  );
 }
