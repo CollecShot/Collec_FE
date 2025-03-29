@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components";
 
 SplashScreen.preventAutoHideAsync(); // 스플래시 화면이 자동으로 사라지지 않도록 설정
@@ -27,12 +28,14 @@ export default function RootLayout() {
     return null; //TODO 여기 스플래쉬 화면 추가
   }
   return (
-    <ThemeProvider theme={theme}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={theme}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
