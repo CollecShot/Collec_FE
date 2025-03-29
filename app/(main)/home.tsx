@@ -1,9 +1,14 @@
-import { Text, View } from "react-native";
+import Grid from "@/src/components/category/Grid";
+import styled from "styled-components/native";
 
 export default function HomeScreen() {
   return (
-    <View>
-      <Text>여기가 홈!</Text>
-    </View>
+    <Container>
+      <Grid />
+    </Container>
   );
 }
+
+const Container = styled.View`
+  background-color: ${({ theme }) => theme.colors.white[100]};
+`;
