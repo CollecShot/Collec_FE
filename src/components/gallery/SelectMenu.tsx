@@ -1,18 +1,22 @@
-import { Body2 } from "@/src/themes/typography";
 import MoveFileIcon from "@assets/icons/moveFile.svg";
 import TrashIcon from "@assets/icons/trashGrey.svg";
+import { Body2 } from "@themes/typography";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
-const SelectMenu: React.FC = () => {
+interface SelectMenuProps {
+  onSelectMode: (mode: "trash" | "move") => void;
+}
+
+const SelectMenu: React.FC<SelectMenuProps> = ({ onSelectMode }) => {
   return (
     <MenuContainer>
-      <MenuItem>
+      <MenuItem onPress={() => onSelectMode("trash")}>
         <Body2>휴지통 이동</Body2>
         <TrashIcon style={{ marginRight: 2 }} />
       </MenuItem>
       <Divider />
-      <MenuItem>
+      <MenuItem onPress={() => onSelectMode("move")}>
         <Body2>파일 이동</Body2>
         <MoveFileIcon />
       </MenuItem>
