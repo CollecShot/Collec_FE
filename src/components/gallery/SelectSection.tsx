@@ -1,4 +1,6 @@
+import { ROUTES } from "@/src/constants/routes";
 import { Body4 } from "@themes/typography";
+import { router } from "expo-router";
 import styled from "styled-components/native";
 import SelectMenu from "./SelectMenu";
 
@@ -7,7 +9,8 @@ interface SelectSectionProps {
   setMenuVisible: (visible: boolean) => void;
   onSelectMode: (mode: "trash" | "move") => void;
   selectMode: "trash" | "move" | null;
-  onComplete: () => void;
+  onComplete: () => void; // trash 모드일 때 완료 시 호출 (모달 등)
+  selectedPhotos?: any[]; // 선택된 사진 배열 (move 모드에서 전달)
 }
 
 const SelectSection: React.FC<SelectSectionProps> = ({
@@ -16,6 +19,7 @@ const SelectSection: React.FC<SelectSectionProps> = ({
   onSelectMode,
   selectMode,
   onComplete,
+  selectedPhotos,
 }) => {
   return (
     <Container>
@@ -23,10 +27,18 @@ const SelectSection: React.FC<SelectSectionProps> = ({
         onPress={(e: { stopPropagation: () => void }) => {
           e.stopPropagation();
           if (selectMode) {
-            // 이미 선택 모드라면 "완료" 버튼 역할
-            onComplete();
+            if (selectMode === "move") {
+              // move 모드일 경우 선택된 사진들을 (move)/index로 전달하며 이동
+              router.push({
+                pathname: ROUTES.MOVE_FILE,
+                params: { selectedPhotos: JSON.stringify(selectedPhotos) },
+              });
+            } else {
+              // trash 모드라면 완료 로직 실행 (예: 휴지통 이동 모달 표시)
+              onComplete();
+            }
           } else {
-            // 평상시 메뉴 토글
+            // 일반 모드일 때 메뉴 토글
             setMenuVisible(!menuVisible);
           }
         }}
