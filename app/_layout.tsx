@@ -1,3 +1,4 @@
+import { CurrentFolderProvider } from "@/src/contexts/CurrentFolderContext";
 import theme from "@/src/themes";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -30,11 +31,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
+        <CurrentFolderProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+        </CurrentFolderProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
