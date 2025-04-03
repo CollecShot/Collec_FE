@@ -3,4 +3,5 @@ export const ROUTES = Object.freeze({
   MAIN_HOME: "/(main)/home",
   GALLERY: "/(gallery)",
   MOVE_FILE: "/(move)",
+  DETAIL: "/(detail)",
 });
