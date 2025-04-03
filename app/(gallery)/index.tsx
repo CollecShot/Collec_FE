@@ -1,4 +1,5 @@
 import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
+import Overlay from "@/src/components/_common/Overlay";
 import SelectSection from "@/src/components/gallery/SelectSection";
 import usePinchToZoom from "@hooks/usePinchToZoom";
 import React, { useState } from "react";
@@ -124,16 +125,4 @@ const ImageWrapper = styled.TouchableOpacity<{ numColumns: number }>`
   padding: 3px;
   position: relative;
   overflow: hidden;
-`;
-
-const Overlay = styled.View`
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  right: 3px;
-  bottom: 3px;
-  border-width: 1.5px;
-  border-color: #fc4646;
-  background-color: #fc464626;
-  z-index: 1;
 `;
