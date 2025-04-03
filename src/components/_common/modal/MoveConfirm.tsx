@@ -24,8 +24,8 @@ const MoveConfirmModal: React.FC<MoveConfirmModalProps> = ({
       <Overlay activeOpacity={1} onPress={onCancel}>
         <Container activeOpacity={1} onPress={() => {}}>
           <Title>
-            {photoCount}장의 사진을 <Highlight>[{fromFolder}]</Highlight>에서{" "}
-            <Highlight>[{toFolder}]</Highlight>로 이동할까요?
+            {photoCount}장의 사진을{`\n`} <Highlight>[{fromFolder}]</Highlight>에서{" "}
+            <Highlight>[{toFolder}]</Highlight>로{`\n`} 이동할까요?
           </Title>
           <ButtonRow>
             <CancelButton onPress={onCancel}>
