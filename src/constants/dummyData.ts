@@ -15,7 +15,7 @@ export const dummyCategories = [
     count: 7,
   },
   {
-    id: "deal",
+    id: "reservation",
     title: CATEGORY_TITLES.reservation,
     imageUri: "https://i.ibb.co/xtjJX6XG/image-4.png",
     count: 12,
