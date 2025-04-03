@@ -1,6 +1,7 @@
 import MoveConfirmModal from "@/src/components/_common/modal/MoveConfirm";
 import Grid from "@/src/components/category/Grid";
 import { dummyCategories } from "@/src/constants/dummyData";
+import { ROUTES } from "@/src/constants/routes";
 import { useCurrentFolder } from "@/src/contexts/CurrentFolderContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
@@ -46,7 +47,7 @@ export default function MoveFile() {
     setModalVisible(false);
     setSelectedCategory(null);
     // 이동 완료 후 이전 화면으로 돌아감
-    router.back();
+    router.push({ pathname: ROUTES.GALLERY, params: { categoryId: currentFolderId } });
   };
 
   return (
