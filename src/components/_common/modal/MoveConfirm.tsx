@@ -1,4 +1,4 @@
-import React from "react";
+import { Body2, Headline3 } from "@/src/themes/typography";
 import { Modal } from "react-native";
 import styled from "styled-components/native";
 
@@ -24,16 +24,18 @@ const MoveConfirmModal: React.FC<MoveConfirmModalProps> = ({
       <Overlay activeOpacity={1} onPress={onCancel}>
         <Container activeOpacity={1} onPress={() => {}}>
           <Title>
-            {photoCount}장의 사진을{`\n`} <Highlight>[{fromFolder}]</Highlight>에서{" "}
-            <Highlight>[{toFolder}]</Highlight>로{`\n`} 이동할까요?
+            <Headline3>
+              {photoCount}장의 사진을{`\n`} <RedText>[{fromFolder}]</RedText>에서{" "}
+              <RedText>[{toFolder}]</RedText>로{`\n`} 이동할까요?
+            </Headline3>
           </Title>
           <ButtonRow>
-            <CancelButton onPress={onCancel}>
-              <ButtonText>아니오</ButtonText>
-            </CancelButton>
-            <ConfirmButton onPress={onConfirm}>
-              <ButtonText style={{ color: "red" }}>다른 파일로 이동</ButtonText>
-            </ConfirmButton>
+            <ButtonLeft onPress={onCancel}>
+              <Body2>아니오</Body2>
+            </ButtonLeft>
+            <ButtonRight onPress={onConfirm}>
+              <Body2 color="#fff">다른 파일로 이동</Body2>
+            </ButtonRight>
           </ButtonRow>
         </Container>
       </Overlay>
@@ -51,46 +53,42 @@ const Overlay = styled.TouchableOpacity`
 `;
 
 const Container = styled.TouchableOpacity`
-  width: 80%;
-  background-color: #eee;
+  width: 90%;
+  border: 0.8px solid #8e8e8e;
+  background-color: #fff;
 `;
 
 const Title = styled.Text`
-  font-size: 16px;
-  color: #000;
-  margin: 20px;
-  line-height: 22px;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
   text-align: center;
 `;
 
-const Highlight = styled.Text`
-  color: red;
-  font-weight: bold;
+const RedText = styled(Headline3)`
+  color: #ff2d55;
 `;
 
 const ButtonRow = styled.View`
   flex-direction: row;
-  border-top-width: 1px;
-  border-top-color: #ccc;
+  border-top-width: 0.8px;
+  border-top-color: #8e8e8e;
 `;
 
-const CancelButton = styled.TouchableOpacity`
+const ButtonLeft = styled.TouchableOpacity`
   flex: 1;
   align-items: center;
   justify-content: center;
   padding: 15px 0;
-  border-right-width: 1px;
-  border-right-color: #ccc;
+  border-right-width: 0.8px;
+  border-right-color: #8e8e8e;
+  background-color: #d4d4d4;
 `;
 
-const ConfirmButton = styled.TouchableOpacity`
+const ButtonRight = styled.TouchableOpacity`
   flex: 1;
   align-items: center;
   justify-content: center;
   padding: 15px 0;
-`;
-
-const ButtonText = styled.Text`
-  font-size: 16px;
-  color: #000;
+  background-color: #fc4646;
 `;
