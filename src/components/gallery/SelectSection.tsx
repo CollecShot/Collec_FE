@@ -1,3 +1,4 @@
+import { DropdownMode } from "@/src/constants/dropdownItems";
 import { ROUTES } from "@/src/constants/routes";
 import { Body4 } from "@themes/typography";
 import { router } from "expo-router";
@@ -7,8 +8,8 @@ import SelectMenu from "./SelectMenu";
 interface SelectSectionProps {
   menuVisible: boolean;
   setMenuVisible: (visible: boolean) => void;
-  onSelectMode: (mode: "trash" | "move") => void;
-  selectMode: "trash" | "move" | null;
+  onSelectMode: (mode: DropdownMode) => void;
+  selectMode: DropdownMode;
   onComplete: () => void; // trash 모드일 때 완료 시 호출 (모달 등)
   selectedPhotos?: any[]; // 선택된 사진 배열 (move 모드에서 전달)
 }

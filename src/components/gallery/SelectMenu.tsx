@@ -1,25 +1,27 @@
-import MoveFileIcon from "@assets/icons/moveFile.svg";
-import TrashIcon from "@assets/icons/trashGrey.svg";
+import { DropdownItem, dropdownItems, DropdownMode } from "@constants/dropdownItems";
 import { Body2 } from "@themes/typography";
+import { Fragment } from "react";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 interface SelectMenuProps {
-  onSelectMode: (mode: "trash" | "move") => void;
+  onSelectMode: (mode: DropdownMode) => void;
 }
 
 const SelectMenu: React.FC<SelectMenuProps> = ({ onSelectMode }) => {
+  const filteredItems = dropdownItems.filter((item) => item.mode !== "info"); // "info" 모드를 제외한 메뉴 항목만 사용
+
   return (
     <MenuContainer>
-      <MenuItem onPress={() => onSelectMode("trash")}>
-        <Body2>휴지통 이동</Body2>
-        <TrashIcon style={{ marginRight: 2 }} />
-      </MenuItem>
-      <Divider />
-      <MenuItem onPress={() => onSelectMode("move")}>
-        <Body2>파일 이동</Body2>
-        <MoveFileIcon />
-      </MenuItem>
+      {filteredItems.map((item: DropdownItem, index: number) => (
+        <Fragment key={index}>
+          <MenuItemButton onPress={() => onSelectMode(item.mode)}>
+            <Body2>{item.label}</Body2>
+            <item.icon style={item.mode === "trash" ? { marginRight: 2 } : {}} />
+          </MenuItemButton>
+          {index < filteredItems.length - 1 && <Divider />}
+        </Fragment>
+      ))}
     </MenuContainer>
   );
 };
@@ -35,7 +37,7 @@ const MenuContainer = styled.View`
   border: 0.8px solid #8e8e8e;
 `;
 
-const MenuItem = styled(TouchableOpacity)`
+const MenuItemButton = styled(TouchableOpacity)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
