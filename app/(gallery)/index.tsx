@@ -1,7 +1,9 @@
 import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
 import Overlay from "@/src/components/_common/Overlay";
 import SelectSection from "@/src/components/gallery/SelectSection";
+import { ROUTES } from "@/src/constants/routes";
 import usePinchToZoom from "@hooks/usePinchToZoom";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, Image, TouchableWithoutFeedback, View } from "react-native";
 import { PinchGestureHandler } from "react-native-gesture-handler";
@@ -22,10 +24,10 @@ const Gallery: React.FC = () => {
   const [selectMode, setSelectMode] = useState<"trash" | "move" | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const handleImagePress = (id: string) => {
+  const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
-      // 일반 모드: 상세 화면 이동 (예시)
-      console.log("상세 화면 이동:", id);
+      // 상세 화면 이동 시 URI 직접 전달
+      router.push({ pathname: ROUTES.DETAIL, params: { uri } });
       return;
     }
     // 선택 모드: 선택 토글
@@ -86,7 +88,10 @@ const Gallery: React.FC = () => {
                 renderItem={({ item }) => {
                   const isSelected = selectedImages.includes(item.id);
                   return (
-                    <ImageWrapper numColumns={numColumns} onPress={() => handleImagePress(item.id)}>
+                    <ImageWrapper
+                      numColumns={numColumns}
+                      onPress={() => handleImagePress(item.id, item.uri)}
+                    >
                       {/* 선택된 경우만 overlay를 내부 inset으로 표시 */}
                       {isSelected && <Overlay />}
                       <Image source={{ uri: item.uri }} style={{ width: "100%", height: "100%" }} />
