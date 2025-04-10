@@ -39,7 +39,7 @@ export default function MoveFile() {
     setSelectedCategory(null);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // 실제 이동 로직(API 호출 등)을 이곳에서 실행
     console.log(
       `${photoCount}장의 사진을 [${currentFolderTitle}]에서 [${selectedCategory.title}]로 이동합니다.`,
@@ -47,7 +47,8 @@ export default function MoveFile() {
     setModalVisible(false);
     setSelectedCategory(null);
     // 이동 완료 후 이전 화면으로 돌아감
-    router.push({ pathname: ROUTES.GALLERY, params: { categoryId: currentFolderId } });
+    await router.replace(ROUTES.MAIN_HOME);
+    await router.push({ pathname: ROUTES.GALLERY, params: { categoryId: currentFolderId } });
   };
 
   return (
