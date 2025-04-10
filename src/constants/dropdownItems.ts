@@ -1,4 +1,4 @@
-import { InfoIcon, MoveFileIcon, TrashIcon } from "@/assets/icons/_index";
+import { InfoIcon, MoveFileIcon, TrashGreyIcon } from "@/assets/icons/_index";
 
 export type DropdownMode = "trash" | "move" | "info";
 export type DropdownItem = {
@@ -10,7 +10,7 @@ export type DropdownItem = {
 export const dropdownItems: DropdownItem[] = [
   {
     label: "휴지통 이동",
-    icon: TrashIcon,
+    icon: TrashGreyIcon,
     mode: "trash",
   },
   {
