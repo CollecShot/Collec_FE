@@ -1,12 +1,10 @@
-// DetailHeader.tsx
+import { BackIcon, MenuIcon } from "@/assets/icons/_index";
 import { ROUTES } from "@/src/constants/routes";
 import useConfirmModal from "@/src/hooks/useConfirmModal";
 import { Body2, Body5, Headline2 } from "@/src/themes/typography";
-import BackIcon from "@assets/icons/Back.svg";
-import MenuIcon from "@assets/icons/Menu.svg";
 import { DropdownItem, dropdownItems, DropdownMode } from "@constants/dropdownItems";
 import { useRouter } from "expo-router";
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import TrashConfirmModal from "../_common/modal/TrashConfirm";
