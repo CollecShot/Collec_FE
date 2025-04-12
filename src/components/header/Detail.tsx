@@ -14,7 +14,7 @@ const DetailHeader: React.FC = () => {
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
 
-  // 날짜/시간은 추후 API 연결 시 변경할 수 있도록 기본값을 설정
+  // TODO: 사진 정보 (날짜, 시간) 연결
   const date = "2024년 12월 8일";
   const time = "오후 12:46";
 
@@ -22,7 +22,6 @@ const DetailHeader: React.FC = () => {
     setMenuVisible((prev) => !prev);
   };
 
-  // trash 모달 관련 커스텀 훅 사용
   const {
     isVisible: trashModalVisible,
     openModal: openTrashModal,
@@ -70,13 +69,13 @@ const DetailHeader: React.FC = () => {
         </TouchableOpacity>
         {menuVisible && (
           <MenuContainer>
-            {dropdownItems.map((item: DropdownItem, index: number) => (
+            {filteredItems.map((item: DropdownItem, index: number) => (
               <Fragment key={index}>
                 <MenuItemButton onPress={() => handleSelect(item.mode)}>
                   <Body2>{item.label}</Body2>
                   <item.icon style={item.mode !== "move" ? { marginRight: 2 } : {}} />
                 </MenuItemButton>
-                {index < dropdownItems.length - 1 && <Divider />}
+                {index < filteredItems.length - 1 && <Divider />}
               </Fragment>
             ))}
           </MenuContainer>
