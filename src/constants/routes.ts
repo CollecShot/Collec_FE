@@ -4,4 +4,5 @@ export const ROUTES = Object.freeze({
   GALLERY: "/(gallery)",
   MOVE_FILE: "/(move)",
   DETAIL: "/(detail)",
+  BIN: "/(bin)",
 });
