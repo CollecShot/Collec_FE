@@ -9,7 +9,9 @@ interface SelectMenuProps {
 }
 
 const SelectMenu: React.FC<SelectMenuProps> = ({ onSelectMode }) => {
-  const filteredItems = dropdownItems.filter((item) => item.mode !== "info"); // "info" 모드를 제외한 메뉴 항목만 사용
+  const filteredItems = dropdownItems.filter(
+    (item) => item.mode === "trash" || item.mode === "move",
+  );
 
   return (
     <MenuContainer>
