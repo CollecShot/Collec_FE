@@ -33,6 +33,10 @@ const DetailHeader: React.FC = () => {
     // API 호출 등 추가 처리 가능
   });
 
+  const filteredItems = dropdownItems.filter(
+    (item) => item.mode === "trash" || item.mode === "move" || item.mode === "info",
+  );
+
   const handleSelect = (mode: DropdownMode) => {
     switch (mode) {
       case "trash":
