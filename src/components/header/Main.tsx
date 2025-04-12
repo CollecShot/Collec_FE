@@ -20,7 +20,13 @@ export default function MainHeader({ navigation, back }: NativeStackHeaderProps)
         <TrashIcon />
       </TouchableOpacity>
       <LogoIcon />
-      <TouchableOpacity onPress={() => console.log("Search icon pressed")}>
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: ROUTES.SEARCH,
+          })
+        }
+      >
         <SearchIcon />
       </TouchableOpacity>
     </HeaderContainer>
