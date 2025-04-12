@@ -5,4 +5,5 @@ export const ROUTES = Object.freeze({
   MOVE_FILE: "/(move)",
   DETAIL: "/(detail)",
   BIN: "/(bin)",
+  SEARCH: "/(search)",
 });
