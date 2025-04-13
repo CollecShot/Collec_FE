@@ -1,16 +1,17 @@
 import { CurrentFolderProvider } from "@/src/contexts/CurrentFolderContext";
 import theme from "@/src/themes";
+import { getOrCreateDeviceId } from "@/src/utils/deviceId";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components";
 
-SplashScreen.preventAutoHideAsync(); // 스플래시 화면이 자동으로 사라지지 않도록 설정
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsLoaded, error] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Bold: require("@assets/fonts/Pretendard-Bold.otf"),
     SemiBold: require("@assets/fonts/Pretendard-SemiBold.otf"),
     Medium: require("@assets/fonts/Pretendard-Medium.otf"),
@@ -18,25 +19,33 @@ export default function RootLayout() {
     Light: require("@assets/fonts/Pretendard-Light.otf"),
     ExtraLight: require("@assets/fonts/Pretendard-ExtraLight.otf"),
   });
+  const [deviceId, setDeviceId] = useState<string | null>(null);
 
+  // Device ID 로드
   useEffect(() => {
-    if (fontsLoaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, error]);
+    (async () => {
+      const id = await getOrCreateDeviceId();
+      console.log("[RootLayout] deviceId ready:", id);
+      setDeviceId(id);
+    })();
+  }, []);
 
-  if (!fontsLoaded && !error) {
-    return null; //TODO 여기 스플래쉬 화면 추가
+  // 폰트 + deviceId 준비되면 스플래시 숨기기
+  useEffect(() => {
+    if ((fontsLoaded || fontError) && deviceId) {
+      SplashScreen.hideAsync().catch(console.warn);
+    }
+  }, [fontsLoaded, fontError, deviceId]);
+
+  if ((!fontsLoaded && !fontError) || deviceId === null) {
+    return null; // 스플래시 유지
   }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
         <CurrentFolderProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          />
+          <Stack screenOptions={{ headerShown: false }} />
         </CurrentFolderProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
