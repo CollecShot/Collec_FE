@@ -46,7 +46,7 @@ export default function Index() {
       {!showGif ? (
         <ActivityIndicator size="large" />
       ) : (
-        <GifImage source={require("@assets/animations/onboarding.gif")} contentFit="cover" />
+        <GifImage source={require("@assets/animations/onboarding.webp")} contentFit="cover" />
       )}
     </Container>
   );
