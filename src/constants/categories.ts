@@ -10,3 +10,17 @@ export const CATEGORY_TITLES: { [key: string]: string } = {
   person: "인물",
   etc: "기타",
 };
+
+//TODO: 백엔드 response 맞추기용 -> 추후 의논
+export const ALBUM_NAME_TO_KEY: Record<string, keyof typeof CATEGORY_TITLES> = {
+  기타: "etc",
+  쇼핑: "shopping",
+  문서: "document",
+  예약: "reservation",
+  장소: "location",
+  쿠폰: "coupon",
+  대화기록: "chat",
+  노래: "music",
+  동물: "animal",
+  인물: "person",
+};
