@@ -4,7 +4,7 @@ import Item from "./Item";
 type CategoryData = {
   id: string;
   title: string;
-  imageUri: string;
+  imageUri: string | null;
   count: number;
 };
 
