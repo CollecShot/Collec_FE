@@ -1,6 +1,7 @@
 import { CurrentFolderProvider } from "@/src/contexts/CurrentFolderContext";
 import theme from "@/src/themes";
 import { getOrCreateDeviceId } from "@/src/utils/deviceId";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -9,6 +10,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components";
 
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -45,7 +48,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
         <CurrentFolderProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <QueryClientProvider client={queryClient}>
+            <Stack screenOptions={{ headerShown: false }} />
+          </QueryClientProvider>
         </CurrentFolderProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
