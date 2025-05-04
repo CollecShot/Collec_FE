@@ -1,10 +1,10 @@
+import { useUserAlbums } from "@/src/apis/hooks/useUserAlbums";
+import Grid from "@/src/components/category/Grid";
+import { ALBUM_NAME_TO_KEY, CATEGORY_TITLES } from "@/src/constants/categories";
+import { ROUTES } from "@/src/constants/routes";
 import { useCurrentFolder } from "@/src/contexts/CurrentFolderContext";
-import Grid from "@components/category/Grid";
-import { dummyCategories } from "@constants/dummyData";
-import { ROUTES } from "@constants/routes";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React from "react";
 import { Dimensions, Image, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
@@ -12,22 +12,55 @@ const windowHeight = Dimensions.get("window").height;
 
 export default function HomeScreen() {
   const { setCurrentFolderId } = useCurrentFolder();
+  const { data: albums = [], isLoading, isError, refetch } = useUserAlbums();
 
-  // (기존) 디바이스 등록 ts 로드
-  const [deviceRegisterTs, setDeviceRegisterTs] = useState<number>(0);
-  useEffect(() => {
-    (async () => {
-      const ts = await AsyncStorage.getItem("deviceRegisterTs");
-      if (ts) setDeviceRegisterTs(Number(ts));
-      else {
-        const now = Math.floor(Date.now() / 1000);
-        await AsyncStorage.setItem("deviceRegisterTs", now.toString());
-        setDeviceRegisterTs(now);
-      }
-    })();
-  }, []);
+  // 1) 로딩 상태
+  if (isLoading) {
+    return (
+      <Center>
+        <StatusText>로딩 중…</StatusText>
+      </Center>
+    );
+  }
 
-  const handlePressItem = (category: { id: string }) => {
+  // 2) 에러 상태
+  if (isError) {
+    return (
+      <Center>
+        <RetryButton onPress={() => refetch()}>
+          <StatusText>다시 시도</StatusText>
+        </RetryButton>
+      </Center>
+    );
+  }
+
+  const CATEGORY_ORDER = [
+    "shopping",
+    "document",
+    "reservation",
+    "location",
+    "coupon",
+    "chat",
+    "music",
+    "animal",
+    "person",
+    "etc",
+  ];
+
+  const categories = albums.map((a) => ({
+    id: a.albumId.toString(),
+    key: ALBUM_NAME_TO_KEY[a.albumName]!,
+    title: CATEGORY_TITLES[ALBUM_NAME_TO_KEY[a.albumName]!],
+    imageUri: a.latestPhotoFilepath,
+    count: a.count,
+  }));
+
+  // 순서대로 렌더링
+  const orderedCategories = categories.sort(
+    (a, b) => CATEGORY_ORDER.indexOf(a.key.toString()) - CATEGORY_ORDER.indexOf(b.key.toString()),
+  );
+
+  const handlePressItem = (category: (typeof categories)[0]) => {
     setCurrentFolderId(category.id);
     router.push({
       pathname: ROUTES.GALLERY,
@@ -38,12 +71,13 @@ export default function HomeScreen() {
   return (
     <ScreenContainer>
       <GridContainer>
-        <Grid data={dummyCategories} onPressItem={handlePressItem} />
+        <Grid data={orderedCategories} onPressItem={handlePressItem} />
       </GridContainer>
-      {/* 테스트용 스크린샷 화면으로 이동하는 버튼 */}
+
       <TestButton onPress={() => router.push("/test-screenshots")}>
         <TestButtonText>스크린샷 테스트 화면</TestButtonText>
       </TestButton>
+
       <ImageContainer>
         <WebPImage source={require("@assets/images/home/home.webp")} resizeMode="contain" />
       </ImageContainer>
@@ -51,12 +85,33 @@ export default function HomeScreen() {
   );
 }
 
+const Center = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StatusText = styled.Text`
+  font-size: 16px;
+  color: #000;
+`;
+
+const RetryButton = styled(TouchableOpacity)`
+  padding: 10px 20px;
+  background-color: #ff3b30;
+  border-radius: 6px;
+`;
+
 const ScreenContainer = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.white[100]};
 `;
 
-// 테스트 버튼
+const GridContainer = styled.View`
+  flex: 1;
+  z-index: 100;
+`;
+
 const TestButton = styled(TouchableOpacity)`
   padding: 10px 16px;
   background-color: #007aff;
@@ -70,11 +125,6 @@ const TestButtonText = styled.Text`
   color: white;
   font-size: 14px;
   font-weight: bold;
-`;
-
-const GridContainer = styled.View`
-  flex: 1;
-  z-index: 100;
 `;
 
 const ImageContainer = styled.View`
