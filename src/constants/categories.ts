@@ -24,3 +24,16 @@ export const ALBUM_NAME_TO_KEY: Record<string, keyof typeof CATEGORY_TITLES> = {
   동물: "animal",
   인물: "person",
 };
+
+export const ALBUM_ID_TO_KEY: Record<number, keyof typeof CATEGORY_TITLES> = {
+  1: "etc",
+  2: "shopping",
+  3: "document",
+  4: "reservation",
+  5: "location",
+  6: "coupon",
+  7: "chat",
+  8: "music",
+  9: "animal",
+  10: "person",
+};
