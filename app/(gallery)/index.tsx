@@ -1,23 +1,27 @@
-import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
+import { usePhotosByAlbums } from "@/src/apis/hooks/usePhotosByAlbums";
 import Overlay from "@/src/components/_common/Overlay";
+import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
 import SelectSection from "@/src/components/gallery/SelectSection";
 import { ROUTES } from "@/src/constants/routes";
 import usePinchToZoom from "@hooks/usePinchToZoom";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, Image, TouchableWithoutFeedback, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { PinchGestureHandler } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
-const dummyImages = Array.from({ length: 20 }, (_, i) => ({
-  id: i.toString(),
-  uri:
-    i === 0
-      ? "https://i.ibb.co/XrpFsL4N/Kakao-Talk-20250221-124721479-02-1.png"
-      : "https://i.ibb.co/d0pzY04N/Rectangle-16.png",
-}));
-
 const Gallery: React.FC = () => {
+  const { categoryId: rawId } = useLocalSearchParams<{ categoryId: string }>();
+  const albumId = Number(rawId);
+  const { data: photos, isLoading, error } = usePhotosByAlbums(albumId);
+
   const { numColumns, handlePinch } = usePinchToZoom();
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -26,11 +30,9 @@ const Gallery: React.FC = () => {
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
-      // 상세 화면 이동 시 URI 직접 전달
       router.push({ pathname: ROUTES.DETAIL, params: { uri } });
       return;
     }
-    // 선택 모드: 선택 토글
     setSelectedImages((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
@@ -41,9 +43,8 @@ const Gallery: React.FC = () => {
 
   const handleComplete = () => {
     if (!selectMode) return;
-    if (selectMode === "trash") {
-      setShowConfirmModal(true);
-    } else {
+    if (selectMode === "trash") setShowConfirmModal(true);
+    else {
       console.log("파일 이동 완료:", selectedImages);
       resetSelection();
     }
@@ -51,7 +52,7 @@ const Gallery: React.FC = () => {
 
   const confirmTrash = () => {
     console.log("휴지통 이동 확정:", selectedImages);
-    // API 호출 등 처리
+    // TODO: API 호출
     resetSelection();
   };
 
@@ -61,11 +62,19 @@ const Gallery: React.FC = () => {
     setShowConfirmModal(false);
   };
 
-  const closeMenu = () => {
-    if (menuVisible) {
-      setMenuVisible(false);
-    }
-  };
+  const closeMenu = () => setMenuVisible(false);
+
+  // 로딩 / 에러 처리
+  if (isLoading) {
+    return (
+      <Centered>
+        <ActivityIndicator size="large" />
+      </Centered>
+    );
+  }
+  if (error) {
+    return <Text>사진을 불러오는 중 오류가 발생했습니다.</Text>;
+  }
 
   return (
     <>
@@ -80,21 +89,25 @@ const Gallery: React.FC = () => {
                 selectMode={selectMode}
                 onComplete={handleComplete}
               />
+
               <FlatList
-                data={dummyImages}
+                data={photos}
                 key={numColumns}
                 numColumns={numColumns}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.photoId.toString()}
                 renderItem={({ item }) => {
-                  const isSelected = selectedImages.includes(item.id);
+                  const id = item.photoId.toString();
+                  const isSelected = selectedImages.includes(id);
                   return (
                     <ImageWrapper
                       numColumns={numColumns}
-                      onPress={() => handleImagePress(item.id, item.uri)}
+                      onPress={() => handleImagePress(id, item.photoFilepath)}
                     >
-                      {/* 선택된 경우만 overlay를 내부 inset으로 표시 */}
                       {isSelected && <Overlay />}
-                      <Image source={{ uri: item.uri }} style={{ width: "100%", height: "100%" }} />
+                      <Image
+                        source={{ uri: item.photoFilepath }}
+                        style={{ width: "100%", height: "100%" }}
+                      />
                     </ImageWrapper>
                   );
                 }}
