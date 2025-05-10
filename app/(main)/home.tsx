@@ -52,7 +52,7 @@ export default function HomeScreen() {
     key: ALBUM_NAME_TO_KEY[a.albumName]!,
     title: CATEGORY_TITLES[ALBUM_NAME_TO_KEY[a.albumName]!],
     imageUri: a.latestPhotoFilepath,
-    count: a.count,
+    count: a.photoCount,
   }));
 
   // 순서대로 렌더링
