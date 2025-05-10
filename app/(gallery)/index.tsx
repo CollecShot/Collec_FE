@@ -66,11 +66,7 @@ const Gallery: React.FC = () => {
 
   // 로딩 / 에러 처리
   if (isLoading) {
-    return (
-      <Centered>
-        <ActivityIndicator size="large" />
-      </Centered>
-    );
+    return <ActivityIndicator size="large" />;
   }
   if (error) {
     return <Text>사진을 불러오는 중 오류가 발생했습니다.</Text>;
