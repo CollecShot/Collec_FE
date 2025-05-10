@@ -84,6 +84,7 @@ const Gallery: React.FC = () => {
                 onSelectMode={handleSelectMode}
                 selectMode={selectMode}
                 onComplete={handleComplete}
+                selectedPhotos={selectedImages}
               />
 
               <FlatList
