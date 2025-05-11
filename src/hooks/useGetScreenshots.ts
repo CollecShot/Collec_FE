@@ -14,25 +14,20 @@ export function useGetScreenshots(deviceRegisterTs: number) {
   const processedIds = useRef<Set<string>>(new Set());
   const [ready, setReady] = useState(false);
 
-  // 1) Load previously processed IDs from AsyncStorage
+  // 1) 이전에 처리한 ID 불러오기
   useEffect(() => {
     (async () => {
       try {
         const json = await AsyncStorage.getItem(STORAGE_KEY);
-        if (json) {
-          processedIds.current = new Set(JSON.parse(json));
-        }
-      } catch (e) {
-        console.warn("Failed to load processed IDs", e);
-      } finally {
-        setReady(true);
-      }
+        if (json) processedIds.current = new Set(JSON.parse(json));
+      } catch {}
+      setReady(true);
     })();
   }, []);
 
-  // 2) Define fetch & upload logic
+  // 2) fetchAndUpload: ready가 true이고 deviceTs>0일 때만 실행
   const fetchAndUpload = useCallback(async () => {
-    if (!ready) return;
+    if (!ready || deviceRegisterTs <= 0) return;
 
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") return;
@@ -51,39 +46,33 @@ export function useGetScreenshots(deviceRegisterTs: number) {
     setScreenshots(resp.assets);
 
     const deviceUID = await getOrCreateDeviceId();
-
     for (const asset of resp.assets) {
       if (processedIds.current.has(asset.id)) continue;
       try {
         const uploadRes = await uploadPhotoMultipart(asset);
+        // 분류 시도
         try {
           await classifyPhoto({ photoId: uploadRes.data.photoId, deviceUID });
-          console.log(`[useGetScreenshots] classify success for photoId ${uploadRes.data.photoId}`);
         } catch (err: any) {
           if (err.response?.status === 404) {
             console.warn(
-              `[useGetScreenshots] classify 404 ignored for photoId ${uploadRes.data.photoId}`,
+              `[useGetScreenshots] classify 404, ignoring photoId ${uploadRes.data.photoId}`,
             );
           } else {
-            console.error(
-              `[useGetScreenshots] classify error for photoId ${uploadRes.data.photoId}:`,
-              err,
-            );
+            console.error(`[useGetScreenshots] classify error`, err);
           }
         }
-        // Mark as processed and persist
+
         processedIds.current.add(asset.id);
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(processedIds.current)));
-
-        // Invalidate albums query so UI updates
         queryClient.invalidateQueries(["userAlbums"]);
-      } catch (err) {
-        console.error(`[useGetScreenshots] failed for id ${asset.id}:`, err);
+      } catch (e) {
+        console.error(`[useGetScreenshots] upload error for ${asset.id}`, e);
       }
     }
   }, [deviceRegisterTs, ready]);
 
-  // 3) Invoke on mount and allow manual refresh
+  // 3) mount 시와 refetch 시 실행
   useEffect(() => {
     fetchAndUpload();
   }, [fetchAndUpload]);
