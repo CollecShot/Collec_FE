@@ -6,4 +6,6 @@ export const ROUTES = Object.freeze({
   DETAIL: "/(detail)",
   BIN: "/(bin)",
   SEARCH: "/(search)",
+  SEARCH_TEXT: "/(search)/text",
+  SEARCH_PHOTO: "/(search)/photo",
 });

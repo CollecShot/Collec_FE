@@ -1,69 +1,102 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
+import { Text, View } from "react-native";
+import styled from "styled-components/native";
+
+import { useMovePhotos } from "@/src/apis/hooks/useMovePhotos";
+import { useUserAlbums } from "@/src/apis/hooks/useUserAlbums";
 import MoveConfirmModal from "@/src/components/_common/modal/MoveConfirm";
 import Grid from "@/src/components/category/Grid";
-import { dummyCategories } from "@/src/constants/dummyData";
 import { ROUTES } from "@/src/constants/routes";
 import { useCurrentFolder } from "@/src/contexts/CurrentFolderContext";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
-import styled from "styled-components/native";
+import { mapAlbumsToCategories, sortCategories } from "@/src/utils/albumUtil";
 
 export default function MoveFile() {
   const router = useRouter();
-  // 이전 화면에서 전달된 파라미터: selectedPhotos만 사용하고,
-  // 현재 폴더 id는 Context에서 가져옵니다.
-  const params = useLocalSearchParams<{ selectedPhotos?: string }>();
-  const { selectedPhotos } = params;
+  const { selectedPhotos: raw } = useLocalSearchParams<{ selectedPhotos?: string }>();
+  const parsedPhotos: number[] = raw ? (JSON.parse(raw) as string[]).map((id) => Number(id)) : [];
 
-  // 선택된 사진은 JSON 문자열로 전달되었다고 가정
-  const parsedPhotos = selectedPhotos ? JSON.parse(selectedPhotos) : [];
-  const photoCount = parsedPhotos.length;
-
-  // 현재 폴더 id는 Context에서 가져옴
   const { currentFolderId } = useCurrentFolder();
-  console.log("현재 폴더:", currentFolderId);
-  const currentFolder = dummyCategories.find((cat) => cat.id === currentFolderId);
-  const currentFolderTitle = currentFolder ? currentFolder.title : "현재 폴더";
 
-  // 사용자가 그리드에서 선택한 카테고리(대상 폴더)
-  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  // 1) 앨범 목록 가져오기
+  const { data: albums = [], isLoading, isError, refetch } = useUserAlbums();
+
+  // 2) 매핑 + 정렬
+  const categories = sortCategories(mapAlbumsToCategories(albums));
+
+  // 3) 현재 폴더 제목
+  const current = categories.find((c) => c.id === currentFolderId);
+  const currentTitle = current?.title ?? "현재 폴더";
+
+  const [target, setTarget] = useState<(typeof categories)[0] | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Grid에서 카테고리 선택 시
-  const handlePressItem = (category: any) => {
-    setSelectedCategory(category);
+  const handlePressItem = (category: (typeof categories)[0]) => {
+    setTarget(category);
     setModalVisible(true);
   };
-
   const handleCancel = () => {
     setModalVisible(false);
-    setSelectedCategory(null);
+    setTarget(null);
   };
 
+  // 단일 사진 이동 mutation
+  const { mutateAsync: movePhoto, isLoading: isMoving } = useMovePhotos();
+
   const handleConfirm = async () => {
-    // 실제 이동 로직(API 호출 등)을 이곳에서 실행
-    console.log(
-      `${photoCount}장의 사진을 [${currentFolderTitle}]에서 [${selectedCategory.title}]로 이동합니다.`,
-    );
-    setModalVisible(false);
-    setSelectedCategory(null);
-    // 이동 완료 후 이전 화면으로 돌아감
-    await router.replace(ROUTES.MAIN_HOME);
-    await router.push({ pathname: ROUTES.GALLERY, params: { categoryId: currentFolderId } });
+    if (!target) return;
+
+    // 1) 전달된 raw, parsedPhotos 확인
+    console.log("🔍 raw param:", raw);
+    console.log("🔍 parsedPhotos:", parsedPhotos, "length:", parsedPhotos.length);
+
+    try {
+      // 2) mutation 호출 전 payload 확인
+      await Promise.all(
+        parsedPhotos.map((photoId) => {
+          const payload = { photoId, targetedAlbumId: Number(target.id) };
+          console.log("➡️ movePhoto payload:", payload);
+          return movePhoto(payload);
+        }),
+      );
+
+      console.log("✅ all movePhoto calls resolved");
+
+      setModalVisible(false);
+      setTarget(null);
+      await router.replace(ROUTES.MAIN_HOME);
+      router.push({
+        pathname: ROUTES.GALLERY,
+        params: { categoryId: target.id },
+      });
+    } catch (e) {
+      console.error("사진 이동 실패", e);
+    }
   };
+
+  if (isLoading) {
+    return <View style={{ backgroundColor: "#fff" }} />;
+  }
+  if (isError) {
+    return (
+      <Centered>
+        <Text onPress={refetch}>앨범 불러오기 실패, 다시 시도</Text>
+      </Centered>
+    );
+  }
 
   return (
     <Container>
-      {/* Grid 컴포넌트는 재사용하여 카테고리 목록을 보여줍니다. */}
-      <Grid data={dummyCategories} onPressItem={handlePressItem} />
+      <Grid data={categories} onPressItem={handlePressItem} />
 
-      {/* 선택한 카테고리(대상 폴더)가 있으면 모달을 표시 */}
       <MoveConfirmModal
         visible={modalVisible}
+        fromFolder={currentTitle}
+        toFolder={target?.title ?? ""}
+        photoCount={parsedPhotos.length}
         onCancel={handleCancel}
         onConfirm={handleConfirm}
-        fromFolder={currentFolderTitle}
-        toFolder={selectedCategory ? selectedCategory.title : ""}
-        photoCount={photoCount}
+        loading={isMoving}
       />
     </Container>
   );
@@ -72,4 +105,10 @@ export default function MoveFile() {
 const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.white[100]};
+`;
+
+const Centered = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 `;

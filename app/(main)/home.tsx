@@ -16,11 +16,7 @@ export default function HomeScreen() {
 
   // 1) 로딩 상태
   if (isLoading) {
-    return (
-      <Center>
-        <StatusText>로딩 중…</StatusText>
-      </Center>
-    );
+    return;
   }
 
   // 2) 에러 상태
