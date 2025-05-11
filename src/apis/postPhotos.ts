@@ -1,6 +1,8 @@
 // src/apis/postPhotos.ts
 import { getOrCreateDeviceId } from "@/src/utils/deviceId";
 import RNFetchBlob from "rn-fetch-blob";
+// ① install & import the manipulator
+import * as ImageManipulator from "expo-image-manipulator";
 
 export type UploadMetadata = {
   deviceUID: string;
@@ -20,48 +22,57 @@ export async function uploadPhotoMultipart(asset: {
     photoDatetime: new Date(asset.creationTime).toISOString(),
   };
 
-  console.log(`[uploadPhotoMultipart] asset.uri = ${asset.uri}`);
+  console.log(`[uploadPhotoMultipart] original URI = ${asset.uri}`);
 
-  // 2) file:// 제거 (Android)
-  const filePath = asset.uri.startsWith("file://")
-    ? asset.uri.replace(/^file:\/\//, "")
-    : asset.uri;
+  // 2) compress the image before uploading
+  //    you can tweak compress (0–1) and resize to your needs
+  const manipResult = await ImageManipulator.manipulateAsync(
+    asset.uri,
+    [
+      // optional: resize if you want max dimensions
+      // { resize: { width: 1080 } }
+    ],
+    {
+      compress: 0.7, // 70% quality
+      format: ImageManipulator.SaveFormat.JPEG,
+      base64: false,
+    },
+  );
+
+  console.log("[uploadPhotoMultipart] compressed URI =", manipResult.uri);
+
+  // 3) strip file:// on Android
+  const filePath = manipResult.uri.startsWith("file://")
+    ? manipResult.uri.replace(/^file:\/\//, "")
+    : manipResult.uri;
   const fileExt = filePath.split(".").pop()!.toLowerCase();
 
   const url = `${process.env.EXPO_PUBLIC_API_URL}/photo/upload`;
 
-  // 3) rn-fetch-blob fetch 호출
-  const resp = await RNFetchBlob.fetch(
-    "POST",
-    url,
+  // 4) rn-fetch-blob fetch 호출 with the compressed path
+  const resp = await RNFetchBlob.fetch("POST", url, { "Content-Type": "multipart/form-data" }, [
     {
-      "Content-Type": "multipart/form-data",
+      name: "metadata",
+      data: JSON.stringify(metadataObj),
+      type: "application/json",
     },
-    [
-      {
-        name: "metadata", // 서버의 @RequestPart('metadata') 와 일치
-        data: JSON.stringify(metadataObj),
-        type: "application/json",
-      },
-      {
-        name: "image", // 서버의 @RequestPart('image') 와 일치
-        filename: `screenshot.${fileExt}`,
-        type: `image/${fileExt === "jpg" ? "jpeg" : fileExt}`,
-        data: RNFetchBlob.wrap(filePath),
-      },
-    ],
-  );
+    {
+      name: "image",
+      filename: `screenshot.${fileExt}`,
+      type: `image/${fileExt === "jpg" ? "jpeg" : fileExt}`,
+      data: RNFetchBlob.wrap(filePath),
+    },
+  ]);
 
-  // 3.1) 전송 raw response info
+  // 5) response logging
   console.log("[uploadPhotoMultipart] response status:", resp.info().status);
-
-  // 4) 응답 처리
   const status = resp.info().status;
   const text = await resp.text();
+
   if (status >= 200 && status < 300) {
     try {
       const result = resp.json();
-      console.log("[uploadPhotoMultipart] success result:", result);
+      console.log("[uploadPhotoMultipart] success:", result);
       return result;
     } catch (err) {
       console.warn("[uploadPhotoMultipart] JSON parse failed", err);

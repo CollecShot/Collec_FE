@@ -1,3 +1,4 @@
+// src/hooks/useGetScreenshots.ts
 import { classifyPhoto } from "@/src/apis/postClassify";
 import { uploadPhotoMultipart } from "@/src/apis/postPhotos";
 import { queryClient } from "@/src/apis/queryClient";
@@ -11,16 +12,28 @@ const STORAGE_KEY = "@processed_screenshot_ids";
 export function useGetScreenshots(deviceRegisterTs: number) {
   const [screenshots, setScreenshots] = useState<MediaLibrary.Asset[]>([]);
   const processedIds = useRef<Set<string>>(new Set());
+  const [ready, setReady] = useState(false);
 
-  // load processed IDs once
+  // 1) Load previously processed IDs from AsyncStorage
   useEffect(() => {
     (async () => {
-      const json = await AsyncStorage.getItem(STORAGE_KEY);
-      if (json) processedIds.current = new Set(JSON.parse(json));
+      try {
+        const json = await AsyncStorage.getItem(STORAGE_KEY);
+        if (json) {
+          processedIds.current = new Set(JSON.parse(json));
+        }
+      } catch (e) {
+        console.warn("Failed to load processed IDs", e);
+      } finally {
+        setReady(true);
+      }
     })();
   }, []);
 
+  // 2) Define fetch & upload logic
   const fetchAndUpload = useCallback(async () => {
+    if (!ready) return;
+
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") return;
 
@@ -38,22 +51,39 @@ export function useGetScreenshots(deviceRegisterTs: number) {
     setScreenshots(resp.assets);
 
     const deviceUID = await getOrCreateDeviceId();
+
     for (const asset of resp.assets) {
       if (processedIds.current.has(asset.id)) continue;
       try {
         const uploadRes = await uploadPhotoMultipart(asset);
-        await classifyPhoto({ photoId: uploadRes.data.photoId, deviceUID });
+        try {
+          await classifyPhoto({ photoId: uploadRes.data.photoId, deviceUID });
+          console.log(`[useGetScreenshots] classify success for photoId ${uploadRes.data.photoId}`);
+        } catch (err: any) {
+          if (err.response?.status === 404) {
+            console.warn(
+              `[useGetScreenshots] classify 404 ignored for photoId ${uploadRes.data.photoId}`,
+            );
+          } else {
+            console.error(
+              `[useGetScreenshots] classify error for photoId ${uploadRes.data.photoId}:`,
+              err,
+            );
+          }
+        }
+        // Mark as processed and persist
         processedIds.current.add(asset.id);
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(processedIds.current)));
-        // refresh albums
+
+        // Invalidate albums query so UI updates
         queryClient.invalidateQueries(["userAlbums"]);
-      } catch {
-        // ignore individual failures
+      } catch (err) {
+        console.error(`[useGetScreenshots] failed for id ${asset.id}:`, err);
       }
     }
-  }, [deviceRegisterTs]);
+  }, [deviceRegisterTs, ready]);
 
-  // call on mount
+  // 3) Invoke on mount and allow manual refresh
   useEffect(() => {
     fetchAndUpload();
   }, [fetchAndUpload]);

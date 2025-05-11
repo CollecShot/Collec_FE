@@ -108,9 +108,9 @@ export default function HomeScreen() {
         </GridContainer>
       </ScrollView>
 
-      <TestButton onPress={() => router.push("/test-screenshots")}>
+      {/* <TestButton onPress={() => router.push("/test-screenshots")}>
         <TestButtonText>스크린샷 테스트 화면</TestButtonText>
-      </TestButton>
+      </TestButton> */}
     </ScreenContainer>
   );
 }
