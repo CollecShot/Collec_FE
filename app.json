@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/splash_logo.png",
         "backgroundColor": "#FC4646"
       },
-      "package": "com.collec.collecfe"
+      "package": "com.collec.collecfe",
+      "permissions": ["READ_EXTERNAL_STORAGE"]
     },
     "web": {
       "bundler": "metro",
