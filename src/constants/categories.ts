@@ -35,5 +35,5 @@ export const ALBUM_ID_TO_KEY: Record<number, keyof typeof CATEGORY_TITLES> = {
   7: "chat",
   8: "music",
   9: "animal",
-  10: "person",
+  0: "person",
 };

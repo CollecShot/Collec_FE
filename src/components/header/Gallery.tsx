@@ -9,7 +9,7 @@ import { HeaderContainer } from "../_common/styled";
 const GalleryHeader: React.FC<{ categoryId: string }> = ({ categoryId }) => {
   const router = useRouter();
   const idNum = Number(categoryId);
-  const key = ALBUM_ID_TO_KEY[idNum];
+  const key = ALBUM_ID_TO_KEY[idNum % 10];
   const title = CATEGORY_TITLES[key] ?? "갤러리";
 
   return (
