@@ -4,6 +4,7 @@ import { getOrCreateDeviceId } from "@/src/utils/deviceId";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
+import { queryClient } from "../apis/queryClient";
 const STORAGE_KEY = "@processed_screenshot_ids";
 
 export default function usePollingScreenshots(deviceRegisterTs: number) {
@@ -79,6 +80,7 @@ export default function usePollingScreenshots(deviceRegisterTs: number) {
           // 처리 완료
           processedIds.current.add(asset.id);
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(processedIds.current)));
+          queryClient.invalidateQueries(["userAlbums"]);
         } catch (err) {
           if (!uploaded) {
             console.error(`[usePollingScreenshots] upload error for id ${asset.id}:`, err);

@@ -6,14 +6,7 @@ import { ROUTES } from "@/src/constants/routes";
 import usePinchToZoom from "@hooks/usePinchToZoom";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { FlatList, Image, Text, TouchableWithoutFeedback, View } from "react-native";
 import { PinchGestureHandler } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
@@ -30,7 +23,7 @@ const Gallery: React.FC = () => {
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
-      router.push({ pathname: ROUTES.DETAIL, params: { uri } });
+      router.push({ pathname: ROUTES.DETAIL, params: { uri, photoId: id.toString() } });
       return;
     }
     setSelectedImages((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -66,7 +59,7 @@ const Gallery: React.FC = () => {
 
   // 로딩 / 에러 처리
   if (isLoading) {
-    return <ActivityIndicator size="large" />;
+    return <View style={{ backgroundColor: "#fff" }} />;
   }
   if (error) {
     return <Text>사진을 불러오는 중 오류가 발생했습니다.</Text>;

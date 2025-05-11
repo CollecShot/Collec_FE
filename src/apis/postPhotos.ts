@@ -1,3 +1,4 @@
+// src/apis/postPhotos.ts
 import { getOrCreateDeviceId } from "@/src/utils/deviceId";
 import RNFetchBlob from "rn-fetch-blob";
 
@@ -18,6 +19,8 @@ export async function uploadPhotoMultipart(asset: {
     photoFilepath: asset.uri,
     photoDatetime: new Date(asset.creationTime).toISOString(),
   };
+
+  console.log(`[uploadPhotoMultipart] asset.uri = ${asset.uri}`);
 
   // 2) file:// 제거 (Android)
   const filePath = asset.uri.startsWith("file://")
@@ -49,18 +52,23 @@ export async function uploadPhotoMultipart(asset: {
     ],
   );
 
+  // 3.1) 전송 raw response info
+  console.log("[uploadPhotoMultipart] response status:", resp.info().status);
+
   // 4) 응답 처리
   const status = resp.info().status;
   const text = await resp.text();
   if (status >= 200 && status < 300) {
     try {
-      console.log(resp.json());
-      return resp.json();
-    } catch {
+      const result = resp.json();
+      console.log("[uploadPhotoMultipart] success result:", result);
+      return result;
+    } catch (err) {
+      console.warn("[uploadPhotoMultipart] JSON parse failed", err);
       return;
     }
   } else {
-    const text = await resp.text();
+    console.error("[uploadPhotoMultipart] error response text:", text);
     throw new Error(`HTTP ${status} — ${text}`);
   }
 }
