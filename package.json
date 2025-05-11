@@ -54,7 +54,8 @@
     "react-native-webview": "13.12.5",
     "rn-fetch-blob": "^0.12.0",
     "styled-components": "^6.1.15",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "expo-image-manipulator": "~13.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
