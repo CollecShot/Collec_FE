@@ -1,3 +1,4 @@
+import { useRecycleBinPhotos } from "@/src/apis/hooks/useRecycleBin";
 import DeleteConfirmModal from "@/src/components/_common/modal/DeleteConfirm";
 import RestoreConfirmModal from "@/src/components/_common/modal/RestoreConfirm";
 import Overlay from "@/src/components/_common/Overlay";
@@ -7,18 +8,9 @@ import { ROUTES } from "@/src/constants/routes";
 import usePinchToZoom from "@hooks/usePinchToZoom";
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Image, TouchableWithoutFeedback, View } from "react-native";
+import { FlatList, Image, Text, TouchableWithoutFeedback, View } from "react-native";
 import { PinchGestureHandler } from "react-native-gesture-handler";
 import styled from "styled-components/native";
-
-// TODO: 휴지통 API 연결
-const dummyImages = Array.from({ length: 20 }, (_, i) => ({
-  id: i.toString(),
-  uri:
-    i === 0
-      ? "https://i.ibb.co/XrpFsL4N/Kakao-Talk-20250221-124721479-02-1.png"
-      : "https://i.ibb.co/d0pzY04N/Rectangle-16.png",
-}));
 
 const Bin: React.FC = () => {
   const { numColumns, handlePinch } = usePinchToZoom();
@@ -28,6 +20,8 @@ const Bin: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRestoreModal, setShowRestoreModal] = useState(false);
   const [hideEmptyAll, setHideEmptyAll] = useState(false);
+
+  const { data: images, isLoading, error } = useRecycleBinPhotos();
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
@@ -57,8 +51,9 @@ const Bin: React.FC = () => {
   const handleEmptyAll = () => {
     // 여기서는 delete 모드로 처리 (원하는 delete 기능 사용)
     setSelectMode("delete");
-    setSelectedImages(dummyImages.map((img) => img.id));
-    // hideEmptyAll은 드롭다운 메뉴에서 옵션 선택 시 변경되도록 함
+    if (images) {
+      setSelectedImages(images.map((img) => img.photoId.toString()));
+    }
   };
 
   const resetSelection = () => {
@@ -74,6 +69,9 @@ const Bin: React.FC = () => {
       setMenuVisible(false);
     }
   };
+
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
+  if (error) return <Text>휴지통 이미지를 불러오는 중 오류가 발생했습니다.</Text>;
 
   return (
     <>
@@ -92,19 +90,23 @@ const Bin: React.FC = () => {
                 hideEmptyAll={hideEmptyAll}
               />
               <FlatList
-                data={dummyImages}
+                data={images}
                 key={numColumns}
                 numColumns={numColumns}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.photoId.toString()}
                 renderItem={({ item }) => {
-                  const isSelected = selectedImages.includes(item.id);
+                  const id = item.photoId.toString();
+                  const isSelected = selectedImages.includes(id);
                   return (
                     <ImageWrapper
                       numColumns={numColumns}
-                      onPress={() => handleImagePress(item.id, item.uri)}
+                      onPress={() => handleImagePress(id, item.photoFilepath)}
                     >
                       {isSelected && <Overlay />}
-                      <Image source={{ uri: item.uri }} style={{ width: "100%", height: "100%" }} />
+                      <Image
+                        source={{ uri: item.photoFilepath }}
+                        style={{ width: "100%", height: "100%" }}
+                      />
                     </ImageWrapper>
                   );
                 }}
