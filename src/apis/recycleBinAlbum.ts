@@ -39,3 +39,8 @@ export interface MoveRecycleBinResponse {
 export const movePhotosRecycleBin = (payload: RecycleBinAlbumPayload) => {
   return api.post<MoveRecycleBinResponse>("/photo/move/trash", payload);
 };
+
+// POST - 사진 복구
+export const restorePhotos = (photoIds: number[]) => {
+  return api.post("/photo/restore", { photoIds });
+};

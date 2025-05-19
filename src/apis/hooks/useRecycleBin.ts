@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "../queryClient";
 import {
   fetchRecycleBinAlbum,
   movePhotosRecycleBin,
   MoveRecycleBinResponse,
   RecycleBinAlbumPayload,
+  restorePhotos,
 } from "../recycleBinAlbum";
 
 // GET 휴디통 이미지 리스트트
@@ -11,6 +13,7 @@ export const useRecycleBinPhotos = () => {
   return useQuery({
     queryKey: ["recycleBinPhotos"],
     queryFn: fetchRecycleBinAlbum,
+    staleTime: 0,
   });
 };
 
@@ -20,10 +23,32 @@ export const useMovePhotosRecycleBin = () => {
     mutationFn: (payload: RecycleBinAlbumPayload) =>
       movePhotosRecycleBin(payload).then((res) => res.data),
 
-    onSuccess: (_data: MoveRecycleBinResponse, variables) => {},
+    onSuccess: (_data: MoveRecycleBinResponse, variables) => {
+      // 이동 성공 후 사진 목록과 앨범 목록 무효화
+      queryClient.invalidateQueries({ queryKey: ["recycleBinPhotos"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["photosByAlbum"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["userAlbums"], exact: true });
+      ㄴ;
+    },
 
     onError: (error) => {
       console.error("휴지통 이동 실패:", error);
+    },
+  });
+};
+
+// POST 사진 복구구
+export const useRestorePhotos = () => {
+  return useMutation({
+    mutationFn: restorePhotos,
+    onSuccess: () => {
+      // 복구 후 관련 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ["recycleBinPhotos"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["photosByAlbum"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["userAlbums"], exact: true });
+    },
+    onError: (err) => {
+      console.error("사진 복구 실패:", err);
     },
   });
 };

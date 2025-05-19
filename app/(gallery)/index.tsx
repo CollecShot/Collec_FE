@@ -1,4 +1,5 @@
 import { usePhotosByAlbums } from "@/src/apis/hooks/usePhotosByAlbums";
+import { useMovePhotosRecycleBin } from "@/src/apis/hooks/useRecycleBin";
 import Overlay from "@/src/components/_common/Overlay";
 import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
 import SelectSection from "@/src/components/gallery/SelectSection";
@@ -14,6 +15,7 @@ const Gallery: React.FC = () => {
   const { categoryId: rawId } = useLocalSearchParams<{ categoryId: string }>();
   const albumId = Number(rawId);
   const { data: photos, isLoading, error } = usePhotosByAlbums(albumId);
+  const moveToTrashMutation = useMovePhotosRecycleBin();
 
   const { numColumns, handlePinch } = usePinchToZoom();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -43,10 +45,18 @@ const Gallery: React.FC = () => {
     }
   };
 
-  const confirmTrash = () => {
-    console.log("휴지통 이동 확정:", selectedImages);
-    // TODO: API 호출
-    resetSelection();
+  const confirmTrash = async () => {
+    try {
+      await moveToTrashMutation.mutateAsync({
+        photoIds: selectedImages.map(Number),
+      });
+
+      console.log("휴지통 이동 성공");
+    } catch (err) {
+      console.error("휴지통 이동 중 에러:", err);
+    } finally {
+      resetSelection();
+    }
   };
 
   const resetSelection = () => {

@@ -1,4 +1,4 @@
-import { useRecycleBinPhotos } from "@/src/apis/hooks/useRecycleBin";
+import { useRecycleBinPhotos, useRestorePhotos } from "@/src/apis/hooks/useRecycleBin";
 import DeleteConfirmModal from "@/src/components/_common/modal/DeleteConfirm";
 import RestoreConfirmModal from "@/src/components/_common/modal/RestoreConfirm";
 import Overlay from "@/src/components/_common/Overlay";
@@ -22,6 +22,7 @@ const Bin: React.FC = () => {
   const [hideEmptyAll, setHideEmptyAll] = useState(false);
 
   const { data: images, isLoading, error } = useRecycleBinPhotos();
+  const { mutate: restorePhotosMutate } = useRestorePhotos();
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
@@ -139,8 +140,8 @@ const Bin: React.FC = () => {
   }
 
   function confirmRestore() {
-    console.log("복구 확정:", selectedImages);
-    // API 호출 등 복구 관련 추가 처리
+    const photoIds = selectedImages.map((id) => parseInt(id, 10));
+    restorePhotosMutate(photoIds);
     resetSelection();
   }
 };
