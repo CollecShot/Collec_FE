@@ -28,7 +28,6 @@ export const useMovePhotosRecycleBin = () => {
       queryClient.invalidateQueries({ queryKey: ["recycleBinPhotos"], exact: true });
       queryClient.invalidateQueries({ queryKey: ["photosByAlbum"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["userAlbums"], exact: true });
-      ㄴ;
     },
 
     onError: (error) => {
