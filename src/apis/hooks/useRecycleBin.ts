@@ -14,6 +14,7 @@ export const useRecycleBinPhotos = () => {
     queryKey: ["recycleBinPhotos"],
     queryFn: fetchRecycleBinAlbum,
     staleTime: 0,
+    refetchOnMount: true,
   });
 };
 

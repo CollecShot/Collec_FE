@@ -5,6 +5,7 @@ export const useUserAlbums = () => {
   return useQuery<UserAlbum[], Error>({
     queryKey: ["userAlbums"],
     queryFn: fetchUserAlbums,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 };

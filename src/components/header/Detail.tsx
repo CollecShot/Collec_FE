@@ -1,5 +1,6 @@
 // src/components/header/DetailHeader.tsx
 import { BackIcon, MenuIcon } from "@/assets/icons/_index";
+import { useMovePhotosRecycleBin } from "@/src/apis/hooks/useRecycleBin";
 import { DropdownItem, dropdownItems, DropdownMode } from "@/src/constants/dropdownItems";
 import { ROUTES } from "@/src/constants/routes";
 import useConfirmModal from "@/src/hooks/useConfirmModal";
@@ -16,6 +17,7 @@ export default function DetailHeader() {
   const router = useRouter();
   const { uri, photoId: rawPhotoId } = useLocalSearchParams<{ uri: string; photoId: string }>();
   const photoId = Number(rawPhotoId);
+  const { mutate: moveToTrash } = useMovePhotosRecycleBin();
 
   // metadata state
   const [modTs, setModTs] = useState<number | null>(null);
@@ -68,7 +70,11 @@ export default function DetailHeader() {
     openModal: openTrashModal,
     closeModal: closeTrashModal,
     confirm: confirmTrash,
-  } = useConfirmModal(() => console.log("휴지통 이동 확정", photoId));
+  } = useConfirmModal(() => {
+    const ids = Array.isArray(photoId) ? photoId : [photoId];
+    console.log("휴지통 이동 확정", ids);
+    moveToTrash({ photoIds: ids });
+  });
 
   // info modal state
   const [infoVisible, setInfoVisible] = useState(false);
