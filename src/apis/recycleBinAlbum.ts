@@ -44,3 +44,10 @@ export const movePhotosRecycleBin = (payload: RecycleBinAlbumPayload) => {
 export const restorePhotos = (photoIds: number[]) => {
   return api.post("/photo/restore", { photoIds });
 };
+
+// DELETE - 사진 삭제
+export const deletePhotos = (photoIds: number[]) => {
+  return api.delete("/photo/trashes/selected", {
+    data: { photoIds },
+  });
+};

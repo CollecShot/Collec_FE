@@ -74,6 +74,7 @@ export default function DetailHeader() {
     const ids = Array.isArray(photoId) ? photoId : [photoId];
     console.log("휴지통 이동 확정", ids);
     moveToTrash({ photoIds: ids });
+    router.back();
   });
 
   // info modal state

@@ -1,4 +1,8 @@
-import { useRecycleBinPhotos, useRestorePhotos } from "@/src/apis/hooks/useRecycleBin";
+import {
+  useDeletePhotos,
+  useRecycleBinPhotos,
+  useRestorePhotos,
+} from "@/src/apis/hooks/useRecycleBin";
 import DeleteConfirmModal from "@/src/components/_common/modal/DeleteConfirm";
 import RestoreConfirmModal from "@/src/components/_common/modal/RestoreConfirm";
 import Overlay from "@/src/components/_common/Overlay";
@@ -23,6 +27,7 @@ const Bin: React.FC = () => {
 
   const { data: images, isLoading, error } = useRecycleBinPhotos();
   const { mutate: restorePhotosMutate } = useRestorePhotos();
+  const { mutate: deletePhotosMutate } = useDeletePhotos();
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
@@ -134,8 +139,8 @@ const Bin: React.FC = () => {
   );
 
   function confirmDelete() {
-    console.log("완전 사진 삭제:", selectedImages);
-    // API 호출 등 추가 처리
+    const photoIds = selectedImages.map((id) => parseInt(id, 10));
+    deletePhotosMutate(photoIds); // 삭제 API 호출
     resetSelection();
   }
 
