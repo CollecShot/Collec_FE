@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components";
 
@@ -21,23 +22,36 @@ export default function RootLayout() {
     Light: require("@assets/fonts/Pretendard-Light.otf"),
     ExtraLight: require("@assets/fonts/Pretendard-ExtraLight.otf"),
   });
-  const [deviceId, setDeviceId] = useState<string | null>(null);
 
-  // Device ID 로드
+  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [deviceError, setDeviceError] = useState<Error | null>(null); // 에러 상태 추가
+
   useEffect(() => {
     (async () => {
-      const id = await getOrCreateDeviceId();
-      console.log("[RootLayout] deviceId ready:", id);
-      setDeviceId(id);
+      try {
+        const id = await getOrCreateDeviceId();
+        console.log("[RootLayout] deviceId ready:", id);
+        setDeviceId(id);
+      } catch (error) {
+        console.error("[RootLayout] Device ID 등록 실패:", error);
+        setDeviceError(error instanceof Error ? error : new Error("알 수 없는 오류"));
+      }
     })();
   }, []);
 
-  // 폰트 + deviceId 준비되면 스플래시 숨기기
+  // 스플래시 숨기기
   useEffect(() => {
     if ((fontsLoaded || fontError) && deviceId) {
       SplashScreen.hideAsync().catch(console.warn);
     }
   }, [fontsLoaded, fontError, deviceId]);
+
+  // Alert 띄우기
+  useEffect(() => {
+    if (deviceError) {
+      Alert.alert("앱 시작 실패", `기기 등록 중 오류가 발생했습니다.\n\n${deviceError.message}`);
+    }
+  }, [deviceError]);
 
   if ((!fontsLoaded && !fontError) || deviceId === null) {
     return null; // 스플래시 유지
