@@ -1,0 +1,10 @@
+export { default as AnimalIcon } from "./animal.svg";
+export { default as ChatIcon } from "./chat.svg";
+export { default as CouponIcon } from "./coupon.svg";
+export { default as DocumentIcon } from "./document.svg";
+export { default as EtcIcon } from "./etc.svg";
+export { default as LocationIcon } from "./location.svg";
+export { default as MusicIcon } from "./music.svg";
+export { default as PersonIcon } from "./person.svg";
+export { default as ReservationIcon } from "./reservation.svg";
+export { default as ShoppingIcon } from "./shopping.svg";
