@@ -1,4 +1,5 @@
 import { ROUTES } from "@/src/constants/routes";
+import { logEvent } from "@/src/utils/analytics";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { useRouter } from "expo-router";
@@ -36,6 +37,14 @@ export default function Index() {
   const handleAuthImagePress = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status === "granted") {
+      try {
+        await logEvent("sign_up", {
+          method: "device_uid",
+        });
+      } catch (e) {
+        console.warn("logEvent error:", e); // 에러 로그 출력
+      }
+
       router.replace(ROUTES.MAIN_HOME);
     } else {
       Alert.alert(
