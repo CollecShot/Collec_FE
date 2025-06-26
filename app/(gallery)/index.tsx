@@ -5,7 +5,7 @@ import TrashConfirmModal from "@/src/components/_common/modal/TrashConfirm";
 import SelectSection from "@/src/components/gallery/SelectSection";
 import { ROUTES } from "@/src/constants/routes";
 import usePinchToZoom from "@hooks/usePinchToZoom";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, Image, Text, TouchableWithoutFeedback, View } from "react-native";
 import { PinchGestureHandler } from "react-native-gesture-handler";
@@ -14,7 +14,7 @@ import styled from "styled-components/native";
 const Gallery: React.FC = () => {
   const { categoryId: rawId } = useLocalSearchParams<{ categoryId: string }>();
   const albumId = Number(rawId);
-  const { data: photos, isLoading, error } = usePhotosByAlbums(albumId);
+  const { data: photos, isLoading, error, refetch } = usePhotosByAlbums(albumId);
   const moveToTrashMutation = useMovePhotosRecycleBin();
 
   const { numColumns, handlePinch } = usePinchToZoom();
@@ -22,6 +22,13 @@ const Gallery: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectMode, setSelectMode] = useState<"trash" | "move" | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // 화면 포커스 시마다 재조회
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
