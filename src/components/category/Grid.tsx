@@ -25,7 +25,8 @@ const Grid: React.FC<GridProps> = ({ data, onPressItem }) => {
           title={category.title}
           imageUri={category.imageUri}
           count={category.count}
-          onPress={() => onPressItem?.(category)}
+          // count가 0이면 이동 불가
+          onPress={category.count > 0 ? () => onPressItem?.(category) : undefined}
         />
       ))}
     </Container>
