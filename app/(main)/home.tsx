@@ -121,7 +121,7 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <GridContainer>
-          <Grid data={orderedCategories} onPressItem={handlePressItem} />
+          <Grid data={orderedCategories} onPressItem={handlePressItem} mode="home" />
         </GridContainer>
       </ScrollView>
     </ScreenContainer>
