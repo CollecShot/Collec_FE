@@ -1,4 +1,3 @@
-// src/components/header/DetailBinHeader.tsx
 import { BackIcon, MenuIcon } from "@/assets/icons/_index";
 import { useDeletePhotos, useRestorePhotos } from "@/src/apis/hooks/useRecycleBin";
 import DeleteConfirmModal, { RedText } from "@/src/components/_common/modal/DeleteConfirm";
@@ -10,7 +9,7 @@ import { Body5, Headline2 } from "@/src/themes/typography";
 import * as FileSystem from "expo-file-system";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, PermissionsAndroid, Platform, TouchableOpacity } from "react-native";
+import { PermissionsAndroid, Platform, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 export default function DetailBinHeader() {
@@ -20,8 +19,6 @@ export default function DetailBinHeader() {
 
   // metadata state
   const [modTs, setModTs] = useState<number | null>(null);
-  const [fileSize, setFileSize] = useState<number | null>(null);
-  const [resolution, setResolution] = useState<{ width: number; height: number } | null>(null);
 
   // load metadata
   useEffect(() => {
@@ -33,13 +30,7 @@ export default function DetailBinHeader() {
         const info = await FileSystem.getInfoAsync(uri);
         if (info.exists) {
           info.modificationTime && setModTs(info.modificationTime * 1000);
-          info.size && setFileSize(info.size);
         }
-        Image.getSize(
-          uri,
-          (w, h) => setResolution({ width: w, height: h }),
-          () => {},
-        );
       } catch (e) {
         console.warn("getInfoAsync failed", e);
       }
