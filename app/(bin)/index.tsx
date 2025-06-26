@@ -79,6 +79,14 @@ const Bin: React.FC = () => {
   if (isLoading) return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
   if (error) return <Text>휴지통 이미지를 불러오는 중 오류가 발생했습니다.</Text>;
 
+  if (!images || images.length === 0) {
+    return (
+      <Center>
+        <WebPImage source={require("@/assets/images/home/empty.webp")} resizeMode="contain" />
+      </Center>
+    );
+  }
+
   return (
     <>
       <TouchableWithoutFeedback onPress={closeMenu} accessible={false}>
@@ -165,4 +173,16 @@ const ImageWrapper = styled.TouchableOpacity<{ numColumns: number }>`
   padding: 3px;
   position: relative;
   overflow: hidden;
+`;
+
+const Center = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  padding-top: 100px;
+`;
+
+const WebPImage = styled(Image)`
+  width: 100%;
 `;
