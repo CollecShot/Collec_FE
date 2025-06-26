@@ -22,6 +22,7 @@ type ItemProps = {
   imageUri: string | null;
   count: number;
   onPress?: () => void;
+  disabled?: boolean;
 };
 
 const iconMap: Record<string, React.FC<SvgProps>> = {
@@ -37,11 +38,18 @@ const iconMap: Record<string, React.FC<SvgProps>> = {
   etc: EtcIcon,
 };
 
-export default function Item({ iconKey, title, imageUri, count, onPress }: ItemProps) {
+export default function Item({
+  iconKey,
+  title,
+  imageUri,
+  count,
+  onPress,
+  disabled = false,
+}: ItemProps) {
   const IconComponent = iconMap[iconKey];
 
   return (
-    <Container onPress={onPress}>
+    <Container onPress={onPress} disabled={disabled}>
       <ImageWrapper>
         {imageUri ? (
           <CategoryImage source={{ uri: imageUri }} resizeMode="cover" />
