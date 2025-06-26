@@ -8,6 +8,7 @@ interface TrashConfirmModalProps {
   showStar?: boolean; // * 표시 여부
   onCancel: () => void;
   onConfirm: () => void;
+  title?: React.ReactNode;
 }
 
 const DeleteConfirmModal: React.FC<TrashConfirmModalProps> = ({
@@ -16,7 +17,13 @@ const DeleteConfirmModal: React.FC<TrashConfirmModalProps> = ({
   showStar = false,
   onCancel,
   onConfirm,
+  title,
 }) => {
+  const defaultTitle = (
+    <>
+      {count}장의 사진을 모두 <RedText>삭제</RedText>할까요?
+    </>
+  );
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <Overlay onPress={onCancel} activeOpacity={1}>
@@ -27,9 +34,7 @@ const DeleteConfirmModal: React.FC<TrashConfirmModalProps> = ({
         */}
         <Container activeOpacity={1} onPress={() => {}}>
           <Title>
-            <Headline3>
-              {count}장의 사진을 모두 <RedText>삭제</RedText>할까요?
-            </Headline3>
+            <Headline3>{title || defaultTitle}</Headline3>
             <Body6 color="#8E8E8E">휴지통에 있는 사진을 지우면 다시 볼 수 없어요</Body6>
           </Title>
           <ButtonRow>
@@ -68,7 +73,7 @@ const Title = styled.View`
   gap: 4px;
 `;
 
-const RedText = styled(Headline3)`
+export const RedText = styled(Headline3)`
   color: #ff2d55;
 `;
 

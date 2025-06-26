@@ -8,6 +8,7 @@ interface TrashConfirmModalProps {
   showStar?: boolean; // * 표시 여부
   onCancel: () => void;
   onConfirm: () => void;
+  title?: React.ReactNode;
 }
 
 const RestoreConfirmModal: React.FC<TrashConfirmModalProps> = ({
@@ -16,7 +17,13 @@ const RestoreConfirmModal: React.FC<TrashConfirmModalProps> = ({
   showStar = false,
   onCancel,
   onConfirm,
+  title,
 }) => {
+  const defaultTitle = (
+    <>
+      {count}장의 사진을 모두 <RedText>복구</RedText>할까요?
+    </>
+  );
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <Overlay onPress={onCancel} activeOpacity={1}>
@@ -27,9 +34,7 @@ const RestoreConfirmModal: React.FC<TrashConfirmModalProps> = ({
         */}
         <Container activeOpacity={1} onPress={() => {}}>
           <Title>
-            <Headline3>
-              {count}장의 사진을 모두 <RedText>복구</RedText>할까요?
-            </Headline3>
+            <Headline3>{title || defaultTitle}</Headline3>
             <Body6 color="#8E8E8E">휴지통에 있는 사진을 복구하면 기존 파일로 돌아가요.</Body6>
           </Title>
           <ButtonRow>

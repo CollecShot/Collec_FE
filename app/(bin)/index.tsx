@@ -31,7 +31,7 @@ const Bin: React.FC = () => {
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
-      router.push({ pathname: ROUTES.DETAIL, params: { uri } });
+      router.push({ pathname: ROUTES.DETAIL, params: { uri, fromBin: "1" } }); //fromBin 플래그 추가 (휴지통 기능을 헤더에 띄우기 위해)
       return;
     }
     setSelectedImages((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));

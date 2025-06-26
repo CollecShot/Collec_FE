@@ -1,11 +1,15 @@
 import DetailHeader from "@/src/components/header/Detail";
-import { Stack } from "expo-router";
+import DetailBinHeader from "@/src/components/header/DetailBin";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 export default function MainLayout() {
+  const { fromBin } = useLocalSearchParams<{ fromBin?: string }>();
+
   return (
     <Stack
       screenOptions={{
-        header: () => <DetailHeader />,
+        // fromBin이 "1"이면 휴지통 전용 헤더, 아니면 기본 헤더
+        header: () => (fromBin === "1" ? <DetailBinHeader /> : <DetailHeader />),
       }}
     />
   );
