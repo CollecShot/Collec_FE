@@ -32,6 +32,7 @@ export default function MoveFile() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handlePressItem = (category: (typeof categories)[0]) => {
+    if (Number(category.id) === Number(currentFolderId)) return;
     setTarget(category);
     setModalVisible(true);
   };
@@ -87,7 +88,12 @@ export default function MoveFile() {
 
   return (
     <Container>
-      <Grid data={categories} onPressItem={handlePressItem} />
+      <Grid
+        data={categories}
+        onPressItem={handlePressItem}
+        disabledIds={[currentFolderId]}
+        mode="move"
+      />
 
       <MoveConfirmModal
         visible={modalVisible}

@@ -13,9 +13,11 @@ type CategoryData = {
 interface GridProps {
   data: CategoryData[];
   onPressItem?: (category: CategoryData) => void;
+  disabledIds?: string[];
+  mode?: "home" | "move";
 }
 
-const Grid: React.FC<GridProps> = ({ data, onPressItem }) => {
+const Grid: React.FC<GridProps> = ({ data, onPressItem, disabledIds, mode }) => {
   return (
     <Container>
       {data.map((category) => (
@@ -25,7 +27,16 @@ const Grid: React.FC<GridProps> = ({ data, onPressItem }) => {
           title={category.title}
           imageUri={category.imageUri}
           count={category.count}
-          onPress={() => onPressItem?.(category)}
+          disabled={
+            mode === "home" ? category.count === 0 || disabledIds?.includes(category.id) : false
+          }
+          onPress={
+            mode === "home"
+              ? category.count > 0 && !disabledIds?.includes(category.id)
+                ? () => onPressItem?.(category)
+                : undefined
+              : () => onPressItem?.(category)
+          } // count가 0이면 이동 불가
         />
       ))}
     </Container>

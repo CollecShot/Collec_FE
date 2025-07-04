@@ -14,5 +14,6 @@ export async function fetchUserAlbums(): Promise<UserAlbum[]> {
   const { data } = await api.get<Omit<UserAlbum, "count">[]>("/user-albums", {
     params: { deviceUID },
   });
+  console.log("카테고리 가져오기", data);
   return data;
 }

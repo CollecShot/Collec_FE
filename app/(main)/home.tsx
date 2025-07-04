@@ -92,10 +92,27 @@ export default function HomeScreen() {
     });
   };
 
-  // ——— Render ———
+  // 모든 카테고리의 count가 0일 때 true
+  const isEmpty = orderedCategories.every((cat) => cat.count === 0);
+
+  if (isEmpty) {
+    return (
+      <ScreenContainer>
+        <ScrollView
+          contentContainerStyle={{ flex: 1 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
+          <Center style={{ paddingTop: 100 }}>
+            <WebPImage source={require("@assets/images/home/empty.webp")} resizeMode="contain" />
+          </Center>
+        </ScrollView>
+      </ScreenContainer>
+    );
+  }
+
+  // 하나라도 있으면 메인화면 띄우기
   return (
     <ScreenContainer>
-      {/* z-index 때문에 먼저 호출 */}
       <ImageContainer>
         <WebPImage source={require("@assets/images/home/home.webp")} resizeMode="contain" />
       </ImageContainer>
@@ -104,13 +121,9 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <GridContainer>
-          <Grid data={orderedCategories} onPressItem={handlePressItem} />
+          <Grid data={orderedCategories} onPressItem={handlePressItem} mode="home" />
         </GridContainer>
       </ScrollView>
-
-      {/* <TestButton onPress={() => router.push("/test-screenshots")}>
-        <TestButtonText>스크린샷 테스트 화면</TestButtonText>
-      </TestButton> */}
     </ScreenContainer>
   );
 }

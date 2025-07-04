@@ -27,7 +27,7 @@ export default function Index() {
         } else {
           setShowAuthPrompt(true);
         }
-      }, 14000);
+      }, 8000);
     }
     prepare();
   }, []);

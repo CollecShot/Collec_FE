@@ -31,7 +31,10 @@ const Bin: React.FC = () => {
 
   const handleImagePress = (id: string, uri: string) => {
     if (!selectMode) {
-      router.push({ pathname: ROUTES.DETAIL, params: { uri } });
+      router.push({
+        pathname: ROUTES.DETAIL,
+        params: { uri, photoId: id.toString(), fromBin: "1" },
+      }); //fromBin 플래그 추가 (휴지통 기능을 헤더에 띄우기 위해)
       return;
     }
     setSelectedImages((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -78,6 +81,14 @@ const Bin: React.FC = () => {
 
   if (isLoading) return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
   if (error) return <Text>휴지통 이미지를 불러오는 중 오류가 발생했습니다.</Text>;
+
+  if (!images || images.length === 0) {
+    return (
+      <Center>
+        <WebPImage source={require("@/assets/images/home/empty.webp")} resizeMode="contain" />
+      </Center>
+    );
+  }
 
   return (
     <>
@@ -165,4 +176,16 @@ const ImageWrapper = styled.TouchableOpacity<{ numColumns: number }>`
   padding: 3px;
   position: relative;
   overflow: hidden;
+`;
+
+const Center = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  padding-top: 100px;
+`;
+
+const WebPImage = styled(Image)`
+  width: 100%;
 `;
